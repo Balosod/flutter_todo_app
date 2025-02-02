@@ -47,15 +47,6 @@ class _AddTodoState extends State<AddTodo> {
     );
   }
 
-  // void _saveTodo() {
-  //   if (_controller.text.trim().isNotEmpty) {
-  //     widget.onAdd(_controller.text.trim());
-  //     Navigator.of(context).pushReplacement(
-  //       MaterialPageRoute(builder: (context) => const Todos()),
-  //     );
-  //   }
-  // }
-
   void _saveTodo() {
     if (_controller.text.isNotEmpty) {
       widget.onAdd(_controller.text);

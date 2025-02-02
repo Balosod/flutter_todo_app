@@ -52,58 +52,6 @@ class Todos extends StatelessWidget {
     );
   }
 
-  // Widget _buildResponsiveTable(List<Todo> todos, BuildContext context) {
-  //   return Center(
-  //     child: SingleChildScrollView(
-  //       scrollDirection: Axis.vertical,
-  //       child: Container(
-  //         constraints: const BoxConstraints(
-  //           minWidth: 600,
-  //           maxWidth: 1200,
-  //         ),
-  //         margin: const EdgeInsets.all(16),
-  //         child: DataTable(
-  //           columnSpacing: 20,
-  //           horizontalMargin: 12,
-  //           columns: const [
-  //             DataColumn(label: Text("ID")),
-  //             DataColumn(label: Text("Title")),
-  //             DataColumn(label: Text("Status")),
-  //             DataColumn(label: Text("Action")),
-  //           ],
-  //           rows: todos
-  //               .map((todo) => DataRow(
-  //                     cells: [
-  //                       DataCell(Text("#${todo.id}")),
-  //                       DataCell(ConstrainedBox(
-  //                         constraints: const BoxConstraints(maxWidth: 200),
-  //                         child: Text(todo.title),
-  //                       )),
-  //                       DataCell(Checkbox(
-  //                         value: todo.completed,
-  //                         onChanged: (value) => _toggleTodo(todo),
-  //                       )),
-  //                       DataCell(
-  //                         PopupMenuButton<String>(
-  //                           icon: const Icon(Icons.more_vert, size: 20),
-  //                           onSelected: (value) =>
-  //                               _handleTodoAction(value, todo, context),
-  //                           itemBuilder: (context) => [
-  //                             const PopupMenuItem(
-  //                                 value: 'edit', child: Text('Edit')),
-  //                             const PopupMenuItem(
-  //                                 value: 'delete', child: Text('Delete')),
-  //                           ],
-  //                         ),
-  //                       ),
-  //                     ],
-  //                   ))
-  //               .toList(),
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
   Widget _buildResponsiveTable(List<Todo> todos, BuildContext context) {
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
