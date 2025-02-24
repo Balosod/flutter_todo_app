@@ -1,38 +1,22 @@
 import 'package:flutter/material.dart';
+// import 'package:todo_app/components/bloc/bloc.dart';
+import 'components/bloc/bloc.dart';
 import 'components/add_todo.dart';
 import 'components/todos.dart';
 import 'components/home.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+     BlocProvider(
+    create: (context) => TodoBloc(),
+    child: const MyApp(),
+  )
+  );
+ 
 }
 
-// State management setup
-final ValueNotifier<List<Todo>> todosNotifier = ValueNotifier([]);
-int _nextId = 1;
-
-// Define Todo class
-class Todo {
-  final int id;
-  final String title;
-  bool completed;
-
-  Todo({
-    required this.id,
-    required this.title,
-    this.completed = false,
-  });
-
-  // Add copyWith for immutability
-  Todo copyWith({String? title, bool? completed}) {
-    return Todo(
-      id: id,
-      title: title ?? this.title,
-      completed: completed ?? this.completed,
-    );
-  }
-}
 
 // Define the router with ShellRoute for shared layout
 final GoRouter _router = GoRouter(
@@ -53,15 +37,7 @@ final GoRouter _router = GoRouter(
         ),
         GoRoute(
           path: '/add_todo',
-          builder: (context, state) => AddTodo(
-            onAdd: (title) {
-              todosNotifier.value = [
-                ...todosNotifier.value,
-                Todo(id: _nextId, title: title)
-              ];
-              _nextId++;
-            },
-          ),
+          builder: (context, state) => AddTodo(),
         ),
       ],
     ),

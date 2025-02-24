@@ -1,30 +1,37 @@
 import 'package:flutter/material.dart';
-import '../main.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'bloc/bloc.dart';
+import 'bloc/state.dart';
+import 'bloc/event.dart';
+import 'bloc/todo_model.dart';
 
 class Todos extends StatelessWidget {
   const Todos({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<List<Todo>>(
-      valueListenable: todosNotifier,
-      builder: (context, todos, child) {
+    return BlocBuilder<TodoBloc, TodoState>(builder: (context, state) {
+      if (state is TodoLoading) {
+        return const Center(child: CircularProgressIndicator());
+      } else if (state is TodoSuccess) {
         return Scaffold(
           body: LayoutBuilder(
             builder: (context, constraints) {
               if (constraints.maxWidth < 600) {
-                return _buildMobileList(todos);
+                return _buildMobileList(state.todos, context);
               } else {
-                return _buildResponsiveTable(todos, context);
+                return _buildResponsiveTable(state.todos, context);
               }
             },
           ),
         );
-      },
-    );
+      }
+      ;
+      return const Center(child: Text("No Todos Found"));
+    });
   }
 
-  Widget _buildMobileList(List<Todo> todos) {
+  Widget _buildMobileList(List<Todo> todos, BuildContext context) {
     return ListView.builder(
       itemCount: todos.length,
       itemBuilder: (context, index) {
@@ -34,7 +41,7 @@ class Todos extends StatelessWidget {
           child: ListTile(
             leading: Checkbox(
               value: todo.completed,
-              onChanged: (value) => _toggleTodo(todo),
+              onChanged: (_) => context.read<TodoBloc>().add(ToggleTodo(todo)),
             ),
             title: Text(todo.title),
             // subtitle: Text("ID: #${todo.id}"),
@@ -93,7 +100,9 @@ class Todos extends StatelessWidget {
                             )),
                             DataCell(Checkbox(
                               value: todo.completed,
-                              onChanged: (value) => _toggleTodo(todo),
+                              onChanged: (_) => context
+                                  .read<TodoBloc>()
+                                  .add(ToggleTodo(todo)),
                             )),
                             DataCell(
                               PopupMenuButton<String>(
@@ -119,20 +128,6 @@ class Todos extends StatelessWidget {
     );
   }
 
-  void _toggleTodo(Todo todo) {
-    final newTodos = todosNotifier.value.map((t) {
-      if (t.id == todo.id) {
-        return Todo(
-          id: t.id,
-          title: t.title,
-          completed: !t.completed,
-        );
-      }
-      return t;
-    }).toList();
-    todosNotifier.value = newTodos;
-  }
-
   void _handleTodoAction(String action, Todo todo, BuildContext context) async {
     if (action == 'edit') {
       final editedTodo = await showDialog<Todo>(
@@ -141,10 +136,7 @@ class Todos extends StatelessWidget {
       );
 
       if (editedTodo != null) {
-        final newTodos = todosNotifier.value.map((t) {
-          return t.id == editedTodo.id ? editedTodo : t;
-        }).toList();
-        todosNotifier.value = newTodos;
+        context.read<TodoBloc>().add(EditTodo(editedTodo));
       }
     } else if (action == 'delete') {
       final confirm = await showDialog<bool>(
@@ -166,8 +158,7 @@ class Todos extends StatelessWidget {
       );
 
       if (confirm == true) {
-        todosNotifier.value =
-            todosNotifier.value.where((t) => t.id != todo.id).toList();
+        context.read<TodoBloc>().add(DeleteTodo(todo.id));
       }
     }
   }
