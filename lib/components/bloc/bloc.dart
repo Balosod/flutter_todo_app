@@ -1,4 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 import 'event.dart';
 import 'state.dart';
 import 'todo_model.dart';
@@ -9,9 +11,28 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
     on<ToggleTodo>(_onToggleTodo);
     on<EditTodo>(_onEditTodo);
     on<DeleteTodo>(_onDeleteTodo);
+
+    _loadTodos(); // Load saved todos on initialization
   }
 
   List<Todo> _todos = [];
+
+  Future<void> _loadTodos() async {
+    final prefs = await SharedPreferences.getInstance();
+    final String? todosJson = prefs.getString('todos');
+
+    if (todosJson != null) {
+      final List<dynamic> todosList = jsonDecode(todosJson);
+      _todos = todosList.map((todo) => Todo.fromJson(todo)).toList();
+      emit(TodoSuccess(_todos)); // Emit saved state
+    }
+  }
+
+  Future<void> _saveTodos() async {
+    final prefs = await SharedPreferences.getInstance();
+    final String todosJson = jsonEncode(_todos.map((t) => t.toJson()).toList());
+    await prefs.setString('todos', todosJson);
+  }
 
   Future<void> _onAddTodo(AddTodos event, Emitter<TodoState> emit) async {
     emit(TodoLoading());
@@ -23,7 +44,7 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
           title: event.title,
         );
         _todos = [..._todos, newTodo];
-
+        await _saveTodos();
         emit(TodoSuccess(_todos)); // Emit new state
       } else {
         emit(TodoFailure("Failed to Add Todo"));
