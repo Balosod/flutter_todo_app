@@ -43,3 +43,17 @@ class DeleteTodo extends TodoEvent {
   @override
   List<Object> get props => [todoId];
 }
+
+
+class SearchTodos extends TodoEvent {
+  final String query;
+  SearchTodos(this.query);
+
+   @override
+  List<Object> get props => [query];
+}
+
+class ReloadTodos extends TodoEvent {
+  @override
+  List<Object> get props => [];
+}

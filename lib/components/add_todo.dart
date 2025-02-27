@@ -38,19 +38,39 @@ class _AddTodoState extends State<AddTodo> {
                     ),
                     autofocus: true,
                     onSubmitted: (_) {
+                      final todoText = _controller.text.trim();
+                      if (todoText.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("Todo cannot be empty!")),
+                        );
+                        return;
+                      }
                       context
                           .read<TodoBloc>()
                           .add(AddTodos(_controller.text.trim()));
-                      context.go("/todos");
+                      // context.go("/todos");
+                      Future.delayed(Duration(milliseconds: 300), () {
+                        context.go("/todos");
+                      });
                     },
                   ),
                   const SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () {
+                      final todoText = _controller.text.trim();
+                      if (todoText.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("Todo cannot be empty!")),
+                        );
+                        return;
+                      }
                       context
                           .read<TodoBloc>()
                           .add(AddTodos(_controller.text.trim()));
-                      context.go("/todos");
+                      // context.go("/todos");
+                      Future.delayed(Duration(milliseconds: 300), () {
+                        context.go("/todos");
+                      });
                     },
                     child: const Text('Add Todo'),
                   ),

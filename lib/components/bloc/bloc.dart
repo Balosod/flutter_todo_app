@@ -11,6 +11,8 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
     on<ToggleTodo>(_onToggleTodo);
     on<EditTodo>(_onEditTodo);
     on<DeleteTodo>(_onDeleteTodo);
+    on<SearchTodos>(_onSearchTodos);
+    on<ReloadTodos>(_onReloadTodos);
 
     _loadTodos(); // Load saved todos on initialization
   }
@@ -84,4 +86,24 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
 
     emit(TodoSuccess(_todos));
   }
+
+  void _onSearchTodos(SearchTodos event, Emitter<TodoState> emit) {
+  if (event.query.isEmpty) {
+    emit(TodoSuccess(_todos)); // Show all if search is empty
+  } else {
+    final filteredTodos = _todos
+        .where((todo) => todo.title.toLowerCase().contains(event.query.toLowerCase()))
+        .toList();
+    emit(TodoSuccess(filteredTodos)); // Emit filtered todos
+  }
 }
+
+
+void _onReloadTodos(ReloadTodos event, Emitter<TodoState> emit) {
+  emit(TodoSuccess(_todos)); // Emit all todos without filtering
+}
+
+}
+
+
+

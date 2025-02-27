@@ -5,9 +5,18 @@ import 'bloc/state.dart';
 import 'bloc/event.dart';
 import 'bloc/todo_model.dart';
 
-class Todos extends StatelessWidget {
+class Todos extends StatefulWidget {
+  // const Todos({super.key});
   const Todos({super.key});
 
+  @override
+  _TodosState createState() => _TodosState();
+  
+  }
+
+class _TodosState extends State<Todos> {
+
+  final TextEditingController _searchController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<TodoBloc, TodoState>(builder: (context, state) {
@@ -32,7 +41,38 @@ class Todos extends StatelessWidget {
   }
 
   Widget _buildMobileList(List<Todo> todos, BuildContext context) {
-    return ListView.builder(
+
+     
+
+  return Column(
+    children: [
+      // Search Bar at the Top
+      Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: TextField(
+          controller: _searchController,
+          decoration: InputDecoration(
+            hintText: "Search todos...",
+            prefixIcon: Icon(Icons.search),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+          onChanged: (query) {
+            if (query.isEmpty) {
+    // Dispatch an event to reload all todos
+    context.read<TodoBloc>().add(ReloadTodos());
+  } else {
+    // Dispatch a search event
+    context.read<TodoBloc>().add(SearchTodos(query));
+  }
+          },
+        ),
+      ),
+      
+      // Expanded to prevent overflow
+      Expanded(
+        child:  ListView.builder(
       itemCount: todos.length,
       itemBuilder: (context, index) {
         final todo = todos[index];
@@ -56,7 +96,9 @@ class Todos extends StatelessWidget {
           ),
         );
       },
-    );
+    ),
+      )],
+  );
   }
 
   Widget _buildResponsiveTable(List<Todo> todos, BuildContext context) {
